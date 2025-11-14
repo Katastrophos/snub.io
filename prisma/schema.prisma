@@ -12,17 +12,19 @@ datasource db {
 
 // User accounts
 model User {
-  id          String   @id @default(uuid())
-  email       String   @unique
-  name        String?
-  password    String   // hashed
-  preferences Json?    // User preferences and settings
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id                String   @id @default(uuid())
+  email             String   @unique
+  name              String?
+  password          String   // hashed
+  preferences       Json?    // User preferences and settings
+  notificationPrefs Json?    // Automation/notification preferences
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
 
   feeds         Feed[]
   feedItems     FeedItem[]
   filterConfigs FilterConfig[]
+  digests       Digest[]
 
   @@map("users")
 }
@@ -122,4 +124,30 @@ model FilterConfig {
   @@index([userId])
   @@index([enabled])
   @@map("filter_configs")
+}
+
+// Generated digests (high-signal summaries)
+model Digest {
+  id        String     @id @default(uuid())
+  userId    String     @map("user_id")
+  type      DigestType
+  startDate DateTime   @map("start_date")
+  endDate   DateTime   @map("end_date")
+  itemCount Int        @map("item_count")
+  items     Json       // Array of item IDs
+  metadata  Json?      // Additional digest metadata
+  createdAt DateTime   @default(now()) @map("created_at")
+  viewedAt  DateTime?  @map("viewed_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+  @@index([createdAt])
+  @@map("digests")
+}
+
+enum DigestType {
+  HOURLY
+  DAILY
+  WEEKLY
 }

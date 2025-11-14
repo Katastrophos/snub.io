@@ -73,12 +73,20 @@ export default function ReaderPage() {
               </Link>
               <p className="text-sm text-gray-500 font-mono mt-1">Feed Reader</p>
             </div>
-            <Link
-              href="/dashboard"
-              className="px-4 py-2 border border-neon-purple text-neon-purple font-mono text-sm hover:bg-neon-purple hover:text-void-black transition-colors"
-            >
-              Manage Feeds
-            </Link>
+            <div className="flex gap-3">
+              <Link
+                href="/digests"
+                className="px-4 py-2 border border-neon-green text-neon-green font-mono text-sm hover:bg-neon-green hover:text-void-black transition-colors"
+              >
+                Digests
+              </Link>
+              <Link
+                href="/dashboard"
+                className="px-4 py-2 border border-neon-purple text-neon-purple font-mono text-sm hover:bg-neon-purple hover:text-void-black transition-colors"
+              >
+                Dashboard
+              </Link>
+            </div>
           </div>
         </div>
       </header>

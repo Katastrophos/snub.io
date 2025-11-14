@@ -122,12 +122,26 @@ export default function DashboardPage() {
               </Link>
               <p className="text-sm text-gray-500 font-mono mt-1">Feed Management</p>
             </div>
-            <Link
-              href="/reader"
-              className="px-4 py-2 border border-neon-cyan text-neon-cyan font-mono text-sm hover:bg-neon-cyan hover:text-void-black transition-colors"
-            >
-              View Reader
-            </Link>
+            <div className="flex gap-3">
+              <Link
+                href="/digests"
+                className="px-4 py-2 border border-neon-green text-neon-green font-mono text-sm hover:bg-neon-green hover:text-void-black transition-colors"
+              >
+                Digests
+              </Link>
+              <Link
+                href="/reader"
+                className="px-4 py-2 border border-neon-cyan text-neon-cyan font-mono text-sm hover:bg-neon-cyan hover:text-void-black transition-colors"
+              >
+                Reader
+              </Link>
+              <Link
+                href="/settings"
+                className="px-4 py-2 border border-gray-600 text-gray-400 font-mono text-sm hover:border-gray-400 hover:text-gray-100 transition-colors"
+              >
+                Settings
+              </Link>
+            </div>
           </div>
         </div>
       </header>
