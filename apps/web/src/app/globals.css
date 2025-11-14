@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply min-h-screen;
+  }
+
+  /* Cyberpunk glow effects */
+  .glow-text {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  }
+
+  .glow-border {
+    box-shadow: 0 0 10px currentColor, 0 0 20px currentColor inset;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-transparent border-2 border-neon-cyan text-neon-cyan
+           font-mono uppercase tracking-wider transition-all duration-300
+           hover:bg-neon-cyan hover:text-void-black hover:shadow-lg
+           hover:shadow-neon-cyan/50;
+  }
+
+  .section-container {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
