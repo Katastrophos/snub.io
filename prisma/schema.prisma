@@ -1,0 +1,125 @@
+// Snub.io Database Schema
+// Universal noise filtering platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User accounts
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  name        String?
+  password    String   // hashed
+  preferences Json?    // User preferences and settings
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  feeds         Feed[]
+  feedItems     FeedItem[]
+  filterConfigs FilterConfig[]
+
+  @@map("users")
+}
+
+// RSS/Atom feeds and manual sources
+model Feed {
+  id            String    @id @default(uuid())
+  userId        String    @map("user_id")
+  url           String
+  title         String?
+  description   String?
+  type          FeedType  @default(RSS)
+  fetchInterval Int       @default(60) @map("fetch_interval") // minutes
+  lastFetchedAt DateTime? @map("last_fetched_at")
+  enabled       Boolean   @default(true)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items FeedItem[]
+
+  @@index([userId])
+  @@index([lastFetchedAt])
+  @@map("feeds")
+}
+
+enum FeedType {
+  RSS
+  ATOM
+  MANUAL
+}
+
+// Individual feed items (signals)
+model FeedItem {
+  id           String           @id @default(uuid())
+  feedId       String           @map("feed_id")
+  userId       String           @map("user_id")
+  externalId   String?          @map("external_id") // ID from feed
+  title        String
+  content      String           @db.Text
+  url          String?
+  author       String?
+  publishedAt  DateTime         @map("published_at")
+  fetchedAt    DateTime         @default(now()) @map("fetched_at")
+
+  // Signal evaluation results
+  signalScore  Float?           @map("signal_score")
+  noiseScore   Float?           @map("noise_score")
+  confidence   Float?
+  decision     FilterDecision?
+
+  // User feedback for training
+  userFeedback UserFeedback?    @map("user_feedback")
+
+  metadata     Json?
+  createdAt    DateTime         @default(now()) @map("created_at")
+
+  feed Feed @relation(fields: [feedId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([feedId, externalId])
+  @@index([userId])
+  @@index([feedId])
+  @@index([decision])
+  @@index([signalScore])
+  @@index([publishedAt])
+  @@map("feed_items")
+}
+
+enum FilterDecision {
+  ALLOW
+  BLOCK
+  DEFER
+  HIGHLIGHT
+  REDUCE
+}
+
+enum UserFeedback {
+  NOISE
+  SIGNAL
+}
+
+// User's filter configurations
+model FilterConfig {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  filterType String   @map("filter_type") // keyword, engagement_bait, etc.
+  name       String
+  config     Json     // Filter-specific configuration
+  enabled    Boolean  @default(true)
+  priority   Int      @default(50)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([enabled])
+  @@map("filter_configs")
+}

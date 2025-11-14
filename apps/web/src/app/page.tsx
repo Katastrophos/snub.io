@@ -30,12 +30,18 @@ export default function Home() {
 
           {/* CTA */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-            <button className="btn-primary">
-              Join Waitlist
-            </button>
-            <button className="px-6 py-3 bg-transparent border-2 border-neon-purple text-neon-purple font-mono uppercase tracking-wider transition-all duration-300 hover:bg-neon-purple hover:text-void-black hover:shadow-lg hover:shadow-neon-purple/50">
-              Learn More
-            </button>
+            <a
+              href="/dashboard"
+              className="btn-primary text-center"
+            >
+              Try Feed Reader
+            </a>
+            <a
+              href="/reader"
+              className="px-6 py-3 bg-transparent border-2 border-neon-purple text-neon-purple font-mono uppercase tracking-wider transition-all duration-300 hover:bg-neon-purple hover:text-void-black hover:shadow-lg hover:shadow-neon-purple/50 text-center"
+            >
+              View Signals
+            </a>
           </div>
         </div>
       </section>
@@ -67,14 +73,23 @@ export default function Home() {
       {/* Status Section */}
       <section className="section-container py-16 border-t border-void-gray">
         <div className="text-center space-y-4">
-          <div className="inline-block px-4 py-2 border border-neon-purple bg-neon-purple/10">
-            <p className="font-mono text-neon-purple uppercase tracking-wider">
-              <span className="animate-flicker">●</span> Building in public
+          <div className="inline-block px-4 py-2 border border-neon-green bg-neon-green/10">
+            <p className="font-mono text-neon-green uppercase tracking-wider">
+              <span className="animate-flicker">●</span> Prototype Live
             </p>
           </div>
           <p className="text-gray-500 text-sm font-mono">
-            v0.1.0 // Initial architecture phase
+            v0.2.0 // Feed reader with signal filtering
           </p>
+          <div className="pt-4 space-y-2">
+            <p className="text-sm text-gray-400 font-mono">Features:</p>
+            <ul className="text-sm text-gray-500 font-mono space-y-1">
+              <li>✓ RSS/Atom feed aggregation</li>
+              <li>✓ Keyword-based filtering</li>
+              <li>✓ Engagement bait detection</li>
+              <li>✓ Signal/noise scoring</li>
+            </ul>
+          </div>
         </div>
       </section>
 

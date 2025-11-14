@@ -14,7 +14,8 @@
   },
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "packages/filters/*"
   ],
   "devDependencies": {
     "prettier": "^3.1.0",
