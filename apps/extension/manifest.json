@@ -1,0 +1,65 @@
+{
+  "manifest_version": 3,
+  "name": "snub.io - Ignore the Noise",
+  "version": "0.1.0",
+  "description": "Filter digital noise in real-time across Twitter, Reddit, and Hacker News. Intentional signal filtering for your attention.",
+
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://twitter.com/*", "*://x.com/*"],
+      "js": ["content-twitter.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://*.reddit.com/*"],
+      "js": ["content-reddit.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://news.ycombinator.com/*"],
+      "js": ["content-hackernews.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+
+  "host_permissions": [
+    "*://twitter.com/*",
+    "*://x.com/*",
+    "*://*.reddit.com/*",
+    "*://news.ycombinator.com/*"
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

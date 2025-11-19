@@ -79,15 +79,15 @@ export default function Home() {
             </p>
           </div>
           <p className="text-gray-500 text-sm font-mono">
-            v0.3.0 // Automated signal aggregation
+            v0.4.0 // Real-time web filtering
           </p>
           <div className="pt-4 space-y-2">
             <p className="text-sm text-gray-400 font-mono">Features:</p>
             <ul className="text-sm text-gray-500 font-mono space-y-1">
-              <li>✓ Automatic feed fetching (background)</li>
-              <li>✓ Signal/noise scoring & filtering</li>
-              <li>✓ Curated digests (hourly/daily/weekly)</li>
-              <li>✓ Customizable automation preferences</li>
+              <li>✓ Browser extension (Twitter/Reddit/HN)</li>
+              <li>✓ Real-time noise suppression</li>
+              <li>✓ Automatic feed aggregation</li>
+              <li>✓ Curated signal digests</li>
             </ul>
           </div>
         </div>

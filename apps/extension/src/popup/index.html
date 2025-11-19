@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>snub.io</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 320px;
+      min-height: 400px;
+      font-family: 'Courier New', monospace;
+      background: #0A0A0A;
+      color: #E0E0E0;
+      padding: 16px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #2A2A2A;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #00F5FF;
+      margin-bottom: 4px;
+      text-shadow: 0 0 10px #00F5FF;
+    }
+
+    .tagline {
+      font-size: 11px;
+      color: #FF006E;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .stats {
+      margin: 16px 0;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+      margin: 4px 0;
+      background: #1A1A1A;
+      border: 1px solid #2A2A2A;
+      font-size: 13px;
+    }
+
+    .stat-label {
+      color: #888;
+    }
+
+    .stat-value {
+      font-weight: bold;
+    }
+
+    .stat-value.blocked { color: #FF006E; }
+    .stat-value.reduced { color: #FFA500; }
+    .stat-value.highlighted { color: #06FFA5; }
+
+    .toggle-section {
+      margin: 16px 0;
+      padding: 12px;
+      background: #1A1A1A;
+      border: 1px solid #2A2A2A;
+    }
+
+    .toggle-label {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .toggle-btn {
+      width: 100%;
+      padding: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      border: 2px solid;
+      background: transparent;
+      transition: all 0.3s;
+    }
+
+    .toggle-btn.enabled {
+      color: #06FFA5;
+      border-color: #06FFA5;
+    }
+
+    .toggle-btn.enabled:hover {
+      background: #06FFA5;
+      color: #0A0A0A;
+    }
+
+    .toggle-btn.disabled {
+      color: #FF006E;
+      border-color: #FF006E;
+    }
+
+    .toggle-btn.disabled:hover {
+      background: #FF006E;
+      color: #0A0A0A;
+    }
+
+    .links {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .link-btn {
+      padding: 8px 12px;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #00F5FF;
+      background: transparent;
+      border: 1px solid #2A2A2A;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .link-btn:hover {
+      border-color: #00F5FF;
+      background: rgba(0, 245, 255, 0.1);
+    }
+
+    .footer {
+      margin-top: 20px;
+      padding-top: 12px;
+      border-top: 1px solid #2A2A2A;
+      text-align: center;
+      font-size: 10px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">snub.io</div>
+    <div class="tagline">Ignore the Noise</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-row">
+      <span class="stat-label">Total Processed:</span>
+      <span class="stat-value" id="stat-total">0</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">🚫 Blocked:</span>
+      <span class="stat-value blocked" id="stat-blocked">0</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">⬇️ Reduced:</span>
+      <span class="stat-value reduced" id="stat-reduced">0</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">⭐ Highlighted:</span>
+      <span class="stat-value highlighted" id="stat-highlighted">0</span>
+    </div>
+  </div>
+
+  <div class="toggle-section">
+    <div class="toggle-label">Extension Status</div>
+    <button class="toggle-btn enabled" id="toggle-btn">Enabled</button>
+  </div>
+
+  <div class="links">
+    <a href="#" class="link-btn" id="open-dashboard">Open Dashboard</a>
+    <a href="#" class="link-btn" id="sync-filters">Sync Filters</a>
+  </div>
+
+  <div class="footer">
+    v0.1.0 // Filtering on <span id="platform">this page</span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
