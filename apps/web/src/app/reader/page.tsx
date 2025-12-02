@@ -74,17 +74,14 @@ export default function ReaderPage() {
               <p className="text-sm text-gray-500 font-mono mt-1">Feed Reader</p>
             </div>
             <div className="flex gap-3">
-              <Link
-                href="/digests"
-                className="px-4 py-2 border border-neon-green text-neon-green font-mono text-sm hover:bg-neon-green hover:text-void-black transition-colors"
-              >
+              <Link href="/digests" className="btn-outline-green btn-sm">
                 Digests
               </Link>
-              <Link
-                href="/dashboard"
-                className="px-4 py-2 border border-neon-purple text-neon-purple font-mono text-sm hover:bg-neon-purple hover:text-void-black transition-colors"
-              >
+              <Link href="/dashboard" className="btn-outline-purple btn-sm">
                 Dashboard
+              </Link>
+              <Link href="/settings" className="btn-secondary btn-sm">
+                Settings
               </Link>
             </div>
           </div>
@@ -94,16 +91,12 @@ export default function ReaderPage() {
       {/* Filter Bar */}
       <div className="border-b border-void-gray bg-void-dark">
         <div className="section-container py-4">
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {['all', 'highlight', 'allow', 'defer', 'reduce', 'block'].map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-4 py-2 font-mono text-sm uppercase tracking-wider transition-colors ${
-                  filter === f
-                    ? 'bg-neon-cyan text-void-black'
-                    : 'bg-void-gray text-gray-400 hover:text-gray-100'
-                }`}
+                className={filter === f ? 'filter-pill-active' : 'filter-pill'}
               >
                 {f}
               </button>
@@ -115,16 +108,16 @@ export default function ReaderPage() {
       {/* Items List */}
       <div className="section-container py-8">
         {loading ? (
-          <div className="text-center py-12">
-            <p className="font-mono text-gray-500 animate-pulse">Loading signals...</p>
+          <div className="empty-state">
+            <div className="spinner mx-auto mb-4"></div>
+            <p className="empty-state-title">Loading signals...</p>
           </div>
         ) : items.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="font-mono text-gray-500">No items found.</p>
-            <Link
-              href="/dashboard"
-              className="inline-block mt-4 px-6 py-3 border border-neon-cyan text-neon-cyan font-mono text-sm hover:bg-neon-cyan hover:text-void-black transition-colors"
-            >
+          <div className="empty-state">
+            <div className="empty-state-icon">📡</div>
+            <p className="empty-state-title">No items found</p>
+            <p className="empty-state-description mb-4">Add some feeds to start filtering the noise.</p>
+            <Link href="/dashboard" className="btn-outline-cyan">
               Add Feeds
             </Link>
           </div>
@@ -144,27 +137,46 @@ export default function ReaderPage() {
   )
 }
 
+// Decision styling with full Tailwind classes (no dynamic interpolation)
+const decisionStyles = {
+  HIGHLIGHT: {
+    card: 'border-neon-green/30 hover:border-neon-green',
+    badge: 'badge-highlight',
+  },
+  ALLOW: {
+    card: 'border-neon-cyan/30 hover:border-neon-cyan',
+    badge: 'badge-allow',
+  },
+  DEFER: {
+    card: 'border-neon-purple/30 hover:border-neon-purple',
+    badge: 'badge-defer',
+  },
+  REDUCE: {
+    card: 'border-orange-500/30 hover:border-orange-500',
+    badge: 'badge-reduce',
+  },
+  BLOCK: {
+    card: 'border-neon-pink/30 hover:border-neon-pink',
+    badge: 'badge-block',
+  },
+} as const
+
 function ItemCard({ item, onFeedback }: { item: FeedItem; onFeedback: (feedback: 'NOISE' | 'SIGNAL') => void }) {
   const [expanded, setExpanded] = useState(false)
 
-  const decisionColor = {
-    HIGHLIGHT: 'neon-green',
-    ALLOW: 'neon-cyan',
-    DEFER: 'neon-purple',
-    REDUCE: 'yellow-500',
-    BLOCK: 'neon-pink',
-  }[item.decision || 'ALLOW'] || 'gray-500'
+  const decision = (item.decision || 'ALLOW') as keyof typeof decisionStyles
+  const styles = decisionStyles[decision] || decisionStyles.ALLOW
 
   const signalPercentage = ((item.signalScore || 0) * 100).toFixed(0)
   const noisePercentage = ((item.noiseScore || 0) * 100).toFixed(0)
 
   return (
-    <div className={`border border-${decisionColor}/30 bg-void-dark p-6 hover:border-${decisionColor} transition-colors`}>
+    <div className={`border bg-void-dark p-6 transition-colors ${styles.card}`}>
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <span className={`px-2 py-1 text-xs font-mono uppercase bg-${decisionColor}/20 text-${decisionColor} border border-${decisionColor}/50`}>
+            <span className={styles.badge}>
               {item.decision}
             </span>
             <span className="text-xs text-gray-500 font-mono">{item.feed.title}</span>
@@ -190,10 +202,14 @@ function ItemCard({ item, onFeedback }: { item: FeedItem; onFeedback: (feedback:
         </div>
 
         {/* Signal/Noise Scores */}
-        <div className="text-right">
-          <div className="text-sm font-mono">
-            <div className="text-neon-green">Signal: {signalPercentage}%</div>
-            <div className="text-neon-pink">Noise: {noisePercentage}%</div>
+        <div className="w-32">
+          <div className="text-xs font-mono text-gray-500 mb-1">Signal {signalPercentage}%</div>
+          <div className="score-bar mb-2">
+            <div className="score-bar-signal" style={{ width: `${signalPercentage}%` }} />
+          </div>
+          <div className="text-xs font-mono text-gray-500 mb-1">Noise {noisePercentage}%</div>
+          <div className="score-bar">
+            <div className="score-bar-noise" style={{ width: `${noisePercentage}%` }} />
           </div>
         </div>
       </div>
@@ -221,33 +237,22 @@ function ItemCard({ item, onFeedback }: { item: FeedItem; onFeedback: (feedback:
 
       {/* Actions */}
       <div className="mt-4 flex items-center gap-2">
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="px-3 py-1 text-xs font-mono border border-gray-600 text-gray-400 hover:text-gray-100 hover:border-gray-400 transition-colors"
-        >
+        <button onClick={() => setExpanded(!expanded)} className="btn-ghost btn-sm">
           {expanded ? 'Show Less' : 'Show More'}
         </button>
 
         <div className="ml-auto flex gap-2">
           <button
             onClick={() => onFeedback('SIGNAL')}
-            className={`px-3 py-1 text-xs font-mono border transition-colors ${
-              item.userFeedback === 'SIGNAL'
-                ? 'border-neon-green text-neon-green bg-neon-green/20'
-                : 'border-gray-600 text-gray-400 hover:border-neon-green hover:text-neon-green'
-            }`}
+            className={item.userFeedback === 'SIGNAL' ? 'badge-green' : 'btn-ghost btn-sm hover:text-neon-green'}
           >
-            👍 Signal
+            Signal
           </button>
           <button
             onClick={() => onFeedback('NOISE')}
-            className={`px-3 py-1 text-xs font-mono border transition-colors ${
-              item.userFeedback === 'NOISE'
-                ? 'border-neon-pink text-neon-pink bg-neon-pink/20'
-                : 'border-gray-600 text-gray-400 hover:border-neon-pink hover:text-neon-pink'
-            }`}
+            className={item.userFeedback === 'NOISE' ? 'badge-pink' : 'btn-ghost btn-sm hover:text-neon-pink'}
           >
-            👎 Noise
+            Noise
           </button>
         </div>
       </div>

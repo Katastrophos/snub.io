@@ -225,7 +225,10 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-void-black flex items-center justify-center">
-        <p className="font-mono text-gray-500 animate-pulse">Loading settings...</p>
+        <div className="text-center">
+          <div className="spinner mx-auto mb-4"></div>
+          <p className="font-mono text-gray-500">Loading settings...</p>
+        </div>
       </div>
     )
   }
@@ -242,13 +245,9 @@ export default function SettingsPage() {
               </Link>
               <p className="text-sm text-gray-500 font-mono mt-1">Settings</p>
             </div>
-            <div className="flex gap-4">
-              <Link
-                href="/dashboard"
-                className="px-4 py-2 border border-gray-600 text-gray-400 font-mono text-sm hover:border-gray-400 hover:text-gray-100 transition-colors"
-              >
-                Dashboard
-              </Link>
+            <div className="flex gap-3">
+              <Link href="/reader" className="btn-outline-cyan btn-sm">Reader</Link>
+              <Link href="/dashboard" className="btn-secondary btn-sm">Dashboard</Link>
             </div>
           </div>
         </div>
@@ -257,13 +256,10 @@ export default function SettingsPage() {
       <div className="section-container py-8 max-w-3xl">
         <div className="space-y-8">
           {/* Filter Management */}
-          <section className="border border-neon-purple bg-void-dark p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-mono text-neon-purple">Signal Filters</h2>
-              <button
-                onClick={() => setShowNewFilter(true)}
-                className="px-4 py-2 bg-neon-purple text-void-black font-mono text-sm hover:bg-neon-purple/80 transition-colors"
-              >
+          <section className="card-purple">
+            <div className="section-header">
+              <h2 className="section-title-purple">Signal Filters</h2>
+              <button onClick={() => setShowNewFilter(true)} className="btn-outline-purple btn-sm">
                 + Add Filter
               </button>
             </div>
@@ -274,50 +270,37 @@ export default function SettingsPage() {
                 <h3 className="text-sm font-mono text-gray-100 mb-4">Create New Filter</h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-mono text-gray-400 mb-1">Filter Name</label>
+                    <label className="label">Filter Name</label>
                     <input
                       type="text"
                       value={newFilterName}
                       onChange={(e) => setNewFilterName(e.target.value)}
                       placeholder="My Custom Filter"
-                      className="w-full px-3 py-2 bg-void-black border border-gray-600 text-gray-100 font-mono text-sm focus:border-neon-purple focus:outline-none"
+                      className="input input-sm"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-mono text-gray-400 mb-1">Filter Type</label>
+                    <label className="label">Filter Type</label>
                     <div className="flex gap-2">
                       <button
                         onClick={() => setNewFilterType('keyword')}
-                        className={`px-4 py-2 font-mono text-sm transition-colors ${
-                          newFilterType === 'keyword'
-                            ? 'bg-neon-cyan text-void-black'
-                            : 'bg-void-gray text-gray-400 hover:bg-gray-700'
-                        }`}
+                        className={newFilterType === 'keyword' ? 'filter-pill-active' : 'filter-pill'}
                       >
                         Keyword
                       </button>
                       <button
                         onClick={() => setNewFilterType('engagement_bait')}
-                        className={`px-4 py-2 font-mono text-sm transition-colors ${
-                          newFilterType === 'engagement_bait'
-                            ? 'bg-neon-cyan text-void-black'
-                            : 'bg-void-gray text-gray-400 hover:bg-gray-700'
-                        }`}
+                        className={newFilterType === 'engagement_bait' ? 'filter-pill-active' : 'filter-pill'}
                       >
                         Engagement Bait
                       </button>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button
-                      onClick={createFilter}
-                      className="px-4 py-2 bg-neon-green text-void-black font-mono text-sm hover:bg-neon-green/80 transition-colors"
-                    >
-                      Create
-                    </button>
+                    <button onClick={createFilter} className="btn-success btn-sm">Create</button>
                     <button
                       onClick={() => { setShowNewFilter(false); setNewFilterName(''); }}
-                      className="px-4 py-2 border border-gray-600 text-gray-400 font-mono text-sm hover:border-gray-400 transition-colors"
+                      className="btn-secondary btn-sm"
                     >
                       Cancel
                     </button>
@@ -329,41 +312,36 @@ export default function SettingsPage() {
             {/* Filter List */}
             <div className="space-y-4">
               {filters.length === 0 ? (
-                <p className="text-gray-500 font-mono text-sm">No filters configured. Add one to start filtering noise.</p>
+                <div className="empty-state py-8">
+                  <p className="empty-state-description">No filters configured. Add one to start filtering noise.</p>
+                </div>
               ) : (
                 filters.map(filter => (
-                  <div key={filter.id} className="border border-gray-700 bg-void-gray/20 p-4">
+                  <div key={filter.id} className="list-item flex-col items-stretch">
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <h3 className="font-mono text-gray-100">{filter.name}</h3>
                         <p className="text-xs text-gray-500 font-mono mt-1">
-                          Type: {filter.filterType === 'keyword' ? 'Keyword Filter' : 'Engagement Bait Detector'}
-                          {' | '}Priority: {filter.priority}
+                          <span className="badge-gray mr-2">{filter.filterType === 'keyword' ? 'Keyword' : 'Engagement Bait'}</span>
+                          Priority: {filter.priority}
                         </p>
                       </div>
                       <div className="flex gap-2">
                         <button
                           onClick={() => toggleFilter(filter.id, !filter.enabled)}
-                          className={`px-3 py-1 font-mono text-xs transition-colors ${
-                            filter.enabled
-                              ? 'bg-neon-green text-void-black'
-                              : 'bg-void-gray text-gray-400'
-                          }`}
+                          className={filter.enabled ? 'badge-green' : 'badge-gray'}
                         >
                           {filter.enabled ? 'ON' : 'OFF'}
                         </button>
                         {filter.filterType === 'keyword' && (
                           <button
                             onClick={() => setEditingFilter(editingFilter === filter.id ? null : filter.id)}
-                            className="px-3 py-1 border border-gray-600 text-gray-400 font-mono text-xs hover:border-neon-cyan hover:text-neon-cyan transition-colors"
+                            className="btn-ghost btn-sm"
                           >
                             {editingFilter === filter.id ? 'Done' : 'Edit'}
                           </button>
                         )}
-                        <button
-                          onClick={() => deleteFilter(filter.id)}
-                          className="px-3 py-1 border border-gray-600 text-gray-400 font-mono text-xs hover:border-red-500 hover:text-red-500 transition-colors"
-                        >
+                        <button onClick={() => deleteFilter(filter.id)} className="btn-danger btn-sm">
                           Delete
                         </button>
                       </div>
@@ -374,47 +352,33 @@ export default function SettingsPage() {
                       <div className="mt-4 pt-4 border-t border-gray-700 space-y-4">
                         {/* Noise Keywords */}
                         <div>
-                          <label className="block text-xs font-mono text-red-400 mb-2">
-                            Noise Keywords (content to block/reduce)
-                          </label>
+                          <label className="label text-neon-pink">Noise Keywords (block/reduce)</label>
                           <div className="flex flex-wrap gap-2 mb-2">
                             {(filter.config.noiseKeywords || []).map((keyword: string) => (
-                              <span
-                                key={keyword}
-                                className="px-2 py-1 bg-red-900/30 text-red-400 font-mono text-xs flex items-center gap-1"
-                              >
+                              <span key={keyword} className="keyword-tag-noise">
                                 {keyword}
-                                <button
-                                  onClick={() => removeKeyword(filter.id, keyword, 'noise')}
-                                  className="hover:text-red-200"
-                                >
-                                  x
-                                </button>
+                                <button onClick={() => removeKeyword(filter.id, keyword, 'noise')} className="hover:text-red-200">x</button>
                               </span>
                             ))}
+                            {(filter.config.noiseKeywords || []).length === 0 && (
+                              <span className="text-xs text-gray-500 font-mono">No noise keywords</span>
+                            )}
                           </div>
                         </div>
 
                         {/* Signal Keywords */}
                         <div>
-                          <label className="block text-xs font-mono text-green-400 mb-2">
-                            Signal Keywords (content to highlight)
-                          </label>
+                          <label className="label text-neon-green">Signal Keywords (highlight)</label>
                           <div className="flex flex-wrap gap-2 mb-2">
                             {(filter.config.signalKeywords || []).map((keyword: string) => (
-                              <span
-                                key={keyword}
-                                className="px-2 py-1 bg-green-900/30 text-green-400 font-mono text-xs flex items-center gap-1"
-                              >
+                              <span key={keyword} className="keyword-tag-signal">
                                 {keyword}
-                                <button
-                                  onClick={() => removeKeyword(filter.id, keyword, 'signal')}
-                                  className="hover:text-green-200"
-                                >
-                                  x
-                                </button>
+                                <button onClick={() => removeKeyword(filter.id, keyword, 'signal')} className="hover:text-green-200">x</button>
                               </span>
                             ))}
+                            {(filter.config.signalKeywords || []).length === 0 && (
+                              <span className="text-xs text-gray-500 font-mono">No signal keywords</span>
+                            )}
                           </div>
                         </div>
 
@@ -423,7 +387,7 @@ export default function SettingsPage() {
                           <select
                             value={keywordType}
                             onChange={(e) => setKeywordType(e.target.value as 'noise' | 'signal')}
-                            className="px-3 py-2 bg-void-black border border-gray-600 text-gray-100 font-mono text-sm focus:border-neon-cyan focus:outline-none"
+                            className="select input-sm w-auto"
                           >
                             <option value="noise">Noise</option>
                             <option value="signal">Signal</option>
@@ -438,12 +402,9 @@ export default function SettingsPage() {
                               }
                             }}
                             placeholder="Enter keyword..."
-                            className="flex-1 px-3 py-2 bg-void-black border border-gray-600 text-gray-100 font-mono text-sm focus:border-neon-cyan focus:outline-none"
+                            className="input input-sm flex-1"
                           />
-                          <button
-                            onClick={() => addKeyword(filter.id, newKeyword, keywordType)}
-                            className="px-4 py-2 bg-neon-cyan text-void-black font-mono text-sm hover:bg-neon-cyan/80 transition-colors"
-                          >
+                          <button onClick={() => addKeyword(filter.id, newKeyword, keywordType)} className="btn-primary btn-sm">
                             Add
                           </button>
                         </div>
@@ -468,30 +429,19 @@ export default function SettingsPage() {
           </section>
 
           {/* Browser Extension */}
-          <section className="border border-neon-green bg-void-dark p-6">
-            <h2 className="text-xl font-mono text-neon-green mb-6">Browser Extension</h2>
+          <section className="card-green">
+            <h2 className="section-title-green mb-4">Browser Extension</h2>
             <p className="text-sm text-gray-400 font-mono mb-4">
-              Connect the snub.io browser extension to sync your filters for real-time
-              content filtering on Twitter, Reddit, and Hacker News.
+              Connect the snub.io browser extension for real-time filtering on Twitter, Reddit, and Hacker News.
             </p>
 
             <div className="space-y-4">
               {extensionToken ? (
                 <div className="space-y-3">
-                  <label className="block text-xs font-mono text-gray-400">
-                    Your Extension Token (add this to the extension settings)
-                  </label>
+                  <label className="label">Your Extension Token</label>
                   <div className="flex gap-2">
-                    <input
-                      type="text"
-                      readOnly
-                      value={extensionToken}
-                      className="flex-1 px-3 py-2 bg-void-black border border-gray-600 text-neon-green font-mono text-xs"
-                    />
-                    <button
-                      onClick={copyToken}
-                      className="px-4 py-2 bg-neon-green text-void-black font-mono text-sm hover:bg-neon-green/80 transition-colors"
-                    >
+                    <input type="text" readOnly value={extensionToken} className="input input-sm flex-1 text-neon-green" />
+                    <button onClick={copyToken} className="btn-success btn-sm">
                       {tokenCopied ? 'Copied!' : 'Copy'}
                     </button>
                   </div>
@@ -500,16 +450,13 @@ export default function SettingsPage() {
                   </p>
                 </div>
               ) : (
-                <button
-                  onClick={generateExtensionToken}
-                  disabled={generatingToken}
-                  className="px-6 py-3 bg-neon-green text-void-black font-mono uppercase tracking-wider hover:bg-neon-green/80 transition-colors disabled:opacity-50"
-                >
+                <button onClick={generateExtensionToken} disabled={generatingToken} className="btn-success btn-lg">
                   {generatingToken ? 'Generating...' : 'Generate Extension Token'}
                 </button>
               )}
 
-              <div className="pt-4 border-t border-gray-700">
+              <div className="divider-light"></div>
+              <div>
                 <h3 className="text-sm font-mono text-gray-300 mb-2">How to use:</h3>
                 <ol className="text-xs text-gray-500 font-mono space-y-1 list-decimal list-inside">
                   <li>Install the snub.io browser extension</li>
@@ -522,27 +469,19 @@ export default function SettingsPage() {
           </section>
 
           {/* Automation Settings */}
-          <section className="border border-neon-cyan bg-void-dark p-6">
-            <h2 className="text-xl font-mono text-neon-cyan mb-6">Automation Settings</h2>
+          <section className="card-cyan">
+            <h2 className="section-title-cyan mb-6">Automation Settings</h2>
 
             <div className="space-y-6">
               {/* Auto Fetch */}
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <label className="block text-sm font-mono text-gray-100 mb-1">
-                    Automatic Feed Fetching
-                  </label>
-                  <p className="text-xs text-gray-500 font-mono">
-                    Automatically fetch new items from your feeds in the background
-                  </p>
+                  <label className="block text-sm font-mono text-gray-100 mb-1">Automatic Feed Fetching</label>
+                  <p className="text-xs text-gray-500 font-mono">Automatically fetch new items in the background</p>
                 </div>
                 <button
                   onClick={() => updatePref('autoFetch', !prefs.autoFetch)}
-                  className={`px-4 py-2 font-mono text-sm transition-colors ${
-                    prefs.autoFetch
-                      ? 'bg-neon-green text-void-black'
-                      : 'bg-void-gray text-gray-400 hover:bg-gray-700'
-                  }`}
+                  className={prefs.autoFetch ? 'badge-green' : 'badge-gray'}
                 >
                   {prefs.autoFetch ? 'Enabled' : 'Disabled'}
                 </button>
@@ -550,22 +489,14 @@ export default function SettingsPage() {
 
               {/* Digest Frequency */}
               <div>
-                <label className="block text-sm font-mono text-gray-100 mb-2">
-                  Digest Frequency
-                </label>
-                <p className="text-xs text-gray-500 font-mono mb-3">
-                  How often to generate curated high-signal summaries
-                </p>
+                <label className="label">Digest Frequency</label>
+                <p className="text-xs text-gray-500 font-mono mb-3">How often to generate high-signal summaries</p>
                 <div className="flex gap-2">
                   {(['hourly', 'daily', 'weekly'] as const).map(freq => (
                     <button
                       key={freq}
                       onClick={() => updatePref('digestFrequency', freq)}
-                      className={`px-4 py-2 font-mono text-sm uppercase transition-colors ${
-                        prefs.digestFrequency === freq
-                          ? 'bg-neon-cyan text-void-black'
-                          : 'bg-void-gray text-gray-400 hover:bg-gray-700'
-                      }`}
+                      className={prefs.digestFrequency === freq ? 'filter-pill-active' : 'filter-pill'}
                     >
                       {freq}
                     </button>
@@ -575,12 +506,8 @@ export default function SettingsPage() {
 
               {/* Signal Threshold */}
               <div>
-                <label className="block text-sm font-mono text-gray-100 mb-2">
-                  High-Signal Threshold: {(prefs.highSignalThreshold * 100).toFixed(0)}%
-                </label>
-                <p className="text-xs text-gray-500 font-mono mb-3">
-                  Minimum signal score for items to be included in digests
-                </p>
+                <label className="label">High-Signal Threshold: <span className="text-neon-cyan">{(prefs.highSignalThreshold * 100).toFixed(0)}%</span></label>
+                <p className="text-xs text-gray-500 font-mono mb-3">Minimum signal score for digest inclusion</p>
                 <input
                   type="range"
                   min="0"
@@ -588,7 +515,6 @@ export default function SettingsPage() {
                   step="0.05"
                   value={prefs.highSignalThreshold}
                   onChange={(e) => updatePref('highSignalThreshold', parseFloat(e.target.value))}
-                  className="w-full"
                 />
                 <div className="flex justify-between text-xs text-gray-500 font-mono mt-1">
                   <span>0%</span>
@@ -599,12 +525,8 @@ export default function SettingsPage() {
 
               {/* Minimum Items */}
               <div>
-                <label className="block text-sm font-mono text-gray-100 mb-2">
-                  Minimum Items: {prefs.digestMinItems}
-                </label>
-                <p className="text-xs text-gray-500 font-mono mb-3">
-                  Only generate digest if there are at least this many high-signal items
-                </p>
+                <label className="label">Minimum Items: <span className="text-neon-cyan">{prefs.digestMinItems}</span></label>
+                <p className="text-xs text-gray-500 font-mono mb-3">Min high-signal items required to generate digest</p>
                 <input
                   type="range"
                   min="1"
@@ -612,7 +534,6 @@ export default function SettingsPage() {
                   step="1"
                   value={prefs.digestMinItems}
                   onChange={(e) => updatePref('digestMinItems', parseInt(e.target.value))}
-                  className="w-full"
                 />
                 <div className="flex justify-between text-xs text-gray-500 font-mono mt-1">
                   <span>1</span>
@@ -623,23 +544,15 @@ export default function SettingsPage() {
 
               {/* Digest Delivery */}
               <div>
-                <label className="block text-sm font-mono text-gray-100 mb-2">
-                  Digest Delivery
-                </label>
-                <p className="text-xs text-gray-500 font-mono mb-3">
-                  Where to deliver generated digests (email coming soon)
-                </p>
+                <label className="label">Digest Delivery</label>
+                <p className="text-xs text-gray-500 font-mono mb-3">Where to deliver digests (email coming soon)</p>
                 <div className="flex gap-2">
                   {(['web', 'email', 'both'] as const).map(delivery => (
                     <button
                       key={delivery}
                       onClick={() => updatePref('digestDelivery', delivery)}
                       disabled={delivery !== 'web'}
-                      className={`px-4 py-2 font-mono text-sm uppercase transition-colors ${
-                        prefs.digestDelivery === delivery
-                          ? 'bg-neon-purple text-void-black'
-                          : 'bg-void-gray text-gray-400 hover:bg-gray-700'
-                      } ${delivery !== 'web' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      className={`${prefs.digestDelivery === delivery ? 'filter-pill-active' : 'filter-pill'} ${delivery !== 'web' ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       {delivery}
                     </button>
@@ -652,27 +565,18 @@ export default function SettingsPage() {
           {/* Save Button */}
           <div className="flex items-center justify-between">
             <div className="flex gap-4">
-              <button
-                onClick={savePreferences}
-                disabled={saving}
-                className="px-8 py-3 bg-neon-green text-void-black font-mono uppercase tracking-wider hover:bg-neon-green/80 transition-colors disabled:opacity-50"
-              >
+              <button onClick={savePreferences} disabled={saving} className="btn-success btn-lg">
                 {saving ? 'Saving...' : 'Save Settings'}
               </button>
-              <button
-                onClick={loadData}
-                className="px-6 py-3 border border-gray-600 text-gray-400 font-mono uppercase tracking-wider hover:border-gray-400 hover:text-gray-100 transition-colors"
-              >
+              <button onClick={loadData} className="btn-secondary btn-lg">
                 Reset
               </button>
             </div>
-            {saved && (
-              <span className="text-neon-green font-mono text-sm">Settings saved</span>
-            )}
+            {saved && <span className="alert-success py-2 px-4">Settings saved</span>}
           </div>
 
           {/* Info Panel */}
-          <div className="border border-void-gray bg-void-gray/30 p-6">
+          <div className="card">
             <h3 className="text-sm font-mono text-gray-300 mb-3 uppercase">How Filters Work</h3>
             <ul className="text-xs text-gray-500 font-mono space-y-2">
               <li>Keyword filters boost or reduce content based on word matches</li>

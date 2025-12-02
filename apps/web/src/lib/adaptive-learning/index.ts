@@ -36,11 +36,11 @@ export async function analyzeFeedback(userId: string): Promise<FeedbackStats> {
     },
   })
 
-  const signalFeedback = items.filter(i => i.userFeedback === 'SIGNAL').length
-  const noiseFeedback = items.filter(i => i.userFeedback === 'NOISE').length
+  const signalFeedback = items.filter((i: { userFeedback: string | null }) => i.userFeedback === 'SIGNAL').length
+  const noiseFeedback = items.filter((i: { userFeedback: string | null }) => i.userFeedback === 'NOISE').length
 
   // Find misclassified items (where user disagreed with filter)
-  const misclassified = items.filter(item => {
+  const misclassified = items.filter((item: { userFeedback: string | null; decision: string | null }) => {
     if (item.userFeedback === 'SIGNAL') {
       // User said signal but filter blocked/reduced
       return item.decision === 'BLOCK' || item.decision === 'REDUCE'

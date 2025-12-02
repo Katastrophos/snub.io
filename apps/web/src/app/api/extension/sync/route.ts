@@ -42,7 +42,7 @@ export async function GET(request: Request) {
       },
     })
 
-    const user = allUsers.find((u) => {
+    const user = allUsers.find((u: { id: string; preferences: unknown }) => {
       const prefs = u.preferences as Record<string, unknown> | null
       return prefs?.extensionToken === token
     })

@@ -32,7 +32,7 @@ export async function GET() {
     })
 
     const sourcesWithNames = await Promise.all(
-      topSources.map(async (s) => {
+      topSources.map(async (s: { feedId: string; _count: { id: number } }) => {
         const feed = await prisma.feed.findUnique({
           where: { id: s.feedId },
           select: { title: true },

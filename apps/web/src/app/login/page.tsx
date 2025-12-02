@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'link'
+import Link from 'next/link'
 
 export default function LoginPage() {
   const router = useRouter()

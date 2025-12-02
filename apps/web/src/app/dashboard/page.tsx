@@ -123,22 +123,13 @@ export default function DashboardPage() {
               <p className="text-sm text-gray-500 font-mono mt-1">Feed Management</p>
             </div>
             <div className="flex gap-3">
-              <Link
-                href="/digests"
-                className="px-4 py-2 border border-neon-green text-neon-green font-mono text-sm hover:bg-neon-green hover:text-void-black transition-colors"
-              >
+              <Link href="/digests" className="btn-outline-green btn-sm">
                 Digests
               </Link>
-              <Link
-                href="/reader"
-                className="px-4 py-2 border border-neon-cyan text-neon-cyan font-mono text-sm hover:bg-neon-cyan hover:text-void-black transition-colors"
-              >
+              <Link href="/reader" className="btn-outline-cyan btn-sm">
                 Reader
               </Link>
-              <Link
-                href="/settings"
-                className="px-4 py-2 border border-gray-600 text-gray-400 font-mono text-sm hover:border-gray-400 hover:text-gray-100 transition-colors"
-              >
+              <Link href="/settings" className="btn-secondary btn-sm">
                 Settings
               </Link>
             </div>
@@ -149,43 +140,32 @@ export default function DashboardPage() {
       <div className="section-container py-8">
         {/* Add Feed Button */}
         <div className="mb-8">
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="px-6 py-3 bg-neon-cyan text-void-black font-mono uppercase tracking-wider hover:bg-neon-cyan/80 transition-colors"
-          >
+          <button onClick={() => setShowAddForm(!showAddForm)} className="btn-primary btn-lg">
             {showAddForm ? 'Cancel' : '+ Add Feed'}
           </button>
         </div>
 
         {/* Add Feed Form */}
         {showAddForm && (
-          <div className="mb-8 p-6 border border-neon-cyan bg-void-dark">
-            <h2 className="text-xl font-mono text-neon-cyan mb-4">Add New Feed</h2>
+          <div className="card-cyan mb-8">
+            <h2 className="section-title-cyan mb-4">Add New Feed</h2>
             <form onSubmit={addFeed} className="space-y-4">
               <div>
-                <label className="block text-sm font-mono text-gray-400 mb-2">
-                  Feed URL (RSS/Atom)
-                </label>
+                <label className="label">Feed URL (RSS/Atom)</label>
                 <input
                   type="url"
                   value={newFeedUrl}
                   onChange={(e) => setNewFeedUrl(e.target.value)}
                   placeholder="https://example.com/feed.xml"
-                  className="w-full px-4 py-3 bg-void-black border border-gray-600 text-gray-100 font-mono focus:border-neon-cyan focus:outline-none"
+                  className="input"
                   required
                   disabled={adding}
                 />
               </div>
 
-              {error && (
-                <p className="text-sm text-neon-pink font-mono">{error}</p>
-              )}
+              {error && <div className="alert-error">{error}</div>}
 
-              <button
-                type="submit"
-                disabled={adding}
-                className="px-6 py-3 bg-neon-green text-void-black font-mono uppercase tracking-wider hover:bg-neon-green/80 transition-colors disabled:opacity-50"
-              >
+              <button type="submit" disabled={adding} className="btn-success btn-lg">
                 {adding ? 'Adding...' : 'Add Feed'}
               </button>
             </form>
@@ -194,18 +174,23 @@ export default function DashboardPage() {
 
         {/* Feeds List */}
         {loading ? (
-          <div className="text-center py-12">
-            <p className="font-mono text-gray-500 animate-pulse">Loading feeds...</p>
+          <div className="empty-state">
+            <div className="spinner mx-auto mb-4"></div>
+            <p className="empty-state-title">Loading feeds...</p>
           </div>
         ) : feeds.length === 0 ? (
-          <div className="text-center py-12 border border-void-gray p-8">
-            <p className="font-mono text-gray-500 mb-4">No feeds yet. Add your first feed to get started!</p>
-            <p className="text-sm text-gray-600 font-mono">Try popular feeds like:</p>
-            <ul className="mt-2 text-sm text-gray-500 font-mono">
-              <li>• https://hnrss.org/frontpage (Hacker News)</li>
-              <li>• https://www.reddit.com/r/programming/.rss (Reddit Programming)</li>
-              <li>• Your favorite blog's RSS feed</li>
-            </ul>
+          <div className="empty-state card">
+            <div className="empty-state-icon">📡</div>
+            <p className="empty-state-title">No feeds yet</p>
+            <p className="empty-state-description mb-4">Add your first feed to get started!</p>
+            <div className="text-sm text-gray-600 font-mono mt-4">
+              <p className="mb-2">Try popular feeds like:</p>
+              <ul className="space-y-1 text-gray-500">
+                <li>• https://hnrss.org/frontpage</li>
+                <li>• https://www.reddit.com/r/programming/.rss</li>
+                <li>• Your favorite blog's RSS feed</li>
+              </ul>
+            </div>
           </div>
         ) : (
           <div className="space-y-4">
@@ -237,56 +222,38 @@ function FeedCard({
   onFetch: () => void
 }) {
   return (
-    <div className={`border p-6 ${feed.enabled ? 'border-neon-cyan/30 bg-void-dark' : 'border-gray-600 bg-void-gray/50'}`}>
+    <div className={`card ${feed.enabled ? 'border-neon-cyan/30' : 'border-gray-700 opacity-60'}`}>
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="text-lg font-bold text-gray-100">{feed.title || 'Untitled Feed'}</h3>
-            {!feed.enabled && (
-              <span className="px-2 py-1 text-xs font-mono bg-gray-600 text-gray-300">Disabled</span>
-            )}
+            {!feed.enabled && <span className="badge-gray">Disabled</span>}
           </div>
 
-          <p className="text-sm text-gray-400 mb-2">{feed.url}</p>
+          <p className="text-sm text-gray-400 mb-2 break-all">{feed.url}</p>
 
           {feed.description && (
             <p className="text-sm text-gray-500 mt-2">{feed.description.substring(0, 150)}...</p>
           )}
 
-          <div className="flex items-center gap-4 mt-3 text-sm font-mono text-gray-500">
-            <span>{feed._count.items} items</span>
-            <span>•</span>
-            <span>Fetch every {feed.fetchInterval}m</span>
+          <div className="flex flex-wrap items-center gap-3 mt-3 text-sm font-mono text-gray-500">
+            <span className="badge-cyan">{feed._count.items} items</span>
+            <span>Every {feed.fetchInterval}m</span>
             {feed.lastFetchedAt && (
-              <>
-                <span>•</span>
-                <span>Last: {new Date(feed.lastFetchedAt).toLocaleString()}</span>
-              </>
+              <span>Last: {new Date(feed.lastFetchedAt).toLocaleString()}</span>
             )}
           </div>
         </div>
 
         {/* Actions */}
         <div className="flex flex-col gap-2">
-          <button
-            onClick={onFetch}
-            disabled={!feed.enabled}
-            className="px-4 py-2 border border-neon-green text-neon-green font-mono text-sm hover:bg-neon-green hover:text-void-black transition-colors disabled:opacity-30"
-          >
+          <button onClick={onFetch} disabled={!feed.enabled} className="btn-outline-green btn-sm">
             Fetch Now
           </button>
-
-          <button
-            onClick={() => onToggle(!feed.enabled)}
-            className="px-4 py-2 border border-gray-600 text-gray-400 font-mono text-sm hover:border-gray-400 hover:text-gray-100 transition-colors"
-          >
+          <button onClick={() => onToggle(!feed.enabled)} className="btn-secondary btn-sm">
             {feed.enabled ? 'Disable' : 'Enable'}
           </button>
-
-          <button
-            onClick={onDelete}
-            className="px-4 py-2 border border-neon-pink text-neon-pink font-mono text-sm hover:bg-neon-pink hover:text-void-black transition-colors"
-          >
+          <button onClick={onDelete} className="btn-danger btn-sm">
             Delete
           </button>
         </div>

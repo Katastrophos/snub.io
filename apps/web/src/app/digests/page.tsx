@@ -77,19 +77,10 @@ export default function DigestsPage() {
               </Link>
               <p className="text-sm text-gray-500 font-mono mt-1">Signal Digests</p>
             </div>
-            <div className="flex gap-4">
-              <Link
-                href="/reader"
-                className="px-4 py-2 border border-gray-600 text-gray-400 font-mono text-sm hover:border-gray-400 hover:text-gray-100 transition-colors"
-              >
-                Reader
-              </Link>
-              <Link
-                href="/dashboard"
-                className="px-4 py-2 border border-neon-purple text-neon-purple font-mono text-sm hover:bg-neon-purple hover:text-void-black transition-colors"
-              >
-                Dashboard
-              </Link>
+            <div className="flex gap-3">
+              <Link href="/reader" className="btn-outline-cyan btn-sm">Reader</Link>
+              <Link href="/dashboard" className="btn-outline-purple btn-sm">Dashboard</Link>
+              <Link href="/settings" className="btn-secondary btn-sm">Settings</Link>
             </div>
           </div>
         </div>
@@ -97,18 +88,18 @@ export default function DigestsPage() {
 
       <div className="section-container py-8">
         {/* Generate Digest Section */}
-        <div className="mb-8 p-6 border border-neon-cyan bg-void-dark">
-          <h2 className="text-xl font-mono text-neon-cyan mb-4">Generate Digest</h2>
+        <div className="card-cyan mb-8">
+          <h2 className="section-title-cyan mb-4">Generate Digest</h2>
           <p className="text-sm text-gray-400 mb-4">
             Manually create a curated summary of your high-signal content
           </p>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             {['HOURLY', 'DAILY', 'WEEKLY'].map((type) => (
               <button
                 key={type}
                 onClick={() => generateDigest(type as any)}
                 disabled={generating}
-                className="px-6 py-3 bg-neon-green text-void-black font-mono uppercase tracking-wider hover:bg-neon-green/80 transition-colors disabled:opacity-50"
+                className="btn-success"
               >
                 {type}
               </button>
@@ -117,16 +108,12 @@ export default function DigestsPage() {
         </div>
 
         {/* Filter Bar */}
-        <div className="mb-6 flex gap-2">
+        <div className="mb-6 flex flex-wrap gap-2">
           {['all', 'hourly', 'daily', 'weekly'].map((type) => (
             <button
               key={type}
               onClick={() => setFilterType(type)}
-              className={`px-4 py-2 font-mono text-sm uppercase tracking-wider transition-colors ${
-                filterType === type
-                  ? 'bg-neon-cyan text-void-black'
-                  : 'bg-void-gray text-gray-400 hover:text-gray-100'
-              }`}
+              className={filterType === type ? 'filter-pill-active' : 'filter-pill'}
             >
               {type}
             </button>
@@ -135,16 +122,16 @@ export default function DigestsPage() {
 
         {/* Digests List */}
         {loading ? (
-          <div className="text-center py-12">
-            <p className="font-mono text-gray-500 animate-pulse">Loading digests...</p>
+          <div className="empty-state">
+            <div className="spinner mx-auto mb-4"></div>
+            <p className="empty-state-title">Loading digests...</p>
           </div>
         ) : digests.length === 0 ? (
-          <div className="text-center py-12 border border-void-gray p-8">
-            <p className="font-mono text-gray-500 mb-4">
-              No digests yet. Generate one or wait for automatic digests.
-            </p>
-            <p className="text-sm text-gray-600 font-mono">
-              Digests are automatically generated hourly, daily (8 AM), and weekly (Monday 8 AM)
+          <div className="empty-state card">
+            <div className="empty-state-icon">📊</div>
+            <p className="empty-state-title">No digests yet</p>
+            <p className="empty-state-description">
+              Generate one above or wait for automatic digests (hourly, daily at 8 AM, weekly on Monday)
             </p>
           </div>
         ) : (
@@ -159,29 +146,33 @@ export default function DigestsPage() {
   )
 }
 
-function DigestCard({ digest }: { digest: Digest }) {
-  const typeColors = {
-    HOURLY: 'neon-green',
-    DAILY: 'neon-cyan',
-    WEEKLY: 'neon-purple',
-  }
+// Digest type styles with full Tailwind classes
+const digestTypeStyles = {
+  HOURLY: {
+    card: 'border-neon-green/30 hover:border-neon-green',
+    badge: 'badge-green',
+  },
+  DAILY: {
+    card: 'border-neon-cyan/30 hover:border-neon-cyan',
+    badge: 'badge-cyan',
+  },
+  WEEKLY: {
+    card: 'border-neon-purple/30 hover:border-neon-purple',
+    badge: 'badge-purple',
+  },
+} as const
 
-  const color = typeColors[digest.type as keyof typeof typeColors] || 'gray-500'
+function DigestCard({ digest }: { digest: Digest }) {
+  const styles = digestTypeStyles[digest.type as keyof typeof digestTypeStyles] || digestTypeStyles.DAILY
 
   return (
     <Link href={`/digests/${digest.id}`}>
-      <div className={`border border-${color}/30 bg-void-dark p-6 hover:border-${color} transition-colors cursor-pointer`}>
+      <div className={`card transition-colors cursor-pointer ${styles.card}`}>
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <span className={`px-3 py-1 text-sm font-mono uppercase bg-${color}/20 text-${color} border border-${color}/50`}>
-                {digest.type}
-              </span>
-              {!digest.viewedAt && (
-                <span className="px-2 py-1 text-xs font-mono bg-neon-pink/20 text-neon-pink border border-neon-pink/50">
-                  NEW
-                </span>
-              )}
+              <span className={styles.badge}>{digest.type}</span>
+              {!digest.viewedAt && <span className="badge-pink">NEW</span>}
             </div>
 
             <div className="text-sm text-gray-400 font-mono space-y-1">
