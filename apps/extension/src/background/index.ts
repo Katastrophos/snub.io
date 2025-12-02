@@ -45,30 +45,49 @@ async function handleSyncFilters(sendResponse: (response: any) => void) {
   try {
     const config = await Storage.getConfig()
 
-    if (!config.syncWithWebApp || !config.webAppUrl || !config.userId) {
+    if (!config.syncWithWebApp || !config.webAppUrl) {
       sendResponse({ error: 'Sync not configured' })
       return
     }
 
-    // Fetch filters from web app API
-    const response = await fetch(`${config.webAppUrl}/api/filters`, {
+    if (!config.extensionToken) {
+      sendResponse({ error: 'No extension token. Generate one in Settings.' })
+      return
+    }
+
+    // Fetch filters from web app API using token
+    const response = await fetch(`${config.webAppUrl}/api/extension/sync`, {
       headers: {
         'Content-Type': 'application/json',
+        'X-Extension-Token': config.extensionToken,
       },
     })
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Invalid token. Regenerate in Settings.')
+      }
       throw new Error('Failed to fetch filters')
     }
 
     const data = await response.json()
     await Storage.setFilterConfigs(data.filters || [])
 
+    // Update last synced time
+    await Storage.setConfig({
+      lastSyncedAt: data.syncedAt,
+      userId: data.userId,
+    })
+
     // Notify all tabs to reload filters
     const tabs = await chrome.tabs.query({})
     for (const tab of tabs) {
       if (tab.id) {
-        chrome.tabs.sendMessage(tab.id, { type: 'FILTERS_UPDATED' })
+        try {
+          chrome.tabs.sendMessage(tab.id, { type: 'FILTERS_UPDATED' })
+        } catch (e) {
+          // Tab may not have content script
+        }
       }
     }
 

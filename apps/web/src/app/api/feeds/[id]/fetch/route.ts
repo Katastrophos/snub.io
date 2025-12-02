@@ -7,8 +7,7 @@ import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { parseFeed, feedItemToSignal } from '@/lib/feed-parser'
 import { evaluateSignal } from '@/lib/signal-evaluator'
-
-const DEMO_USER_ID = 'demo-user'
+import { getAuthenticatedUser } from '@/lib/get-user'
 
 /**
  * POST /api/feeds/:id/fetch - Fetch and process feed items
@@ -18,11 +17,13 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
+    const userId = await getAuthenticatedUser()
+
     // Get feed from database
     const feed = await prisma.feed.findUnique({
       where: {
         id: params.id,
-        userId: DEMO_USER_ID,
+        userId,
       },
     })
 
@@ -58,14 +59,14 @@ export async function POST(
       }
 
       // Convert to signal and evaluate
-      const signal = feedItemToSignal(item, DEMO_USER_ID)
-      const result = await evaluateSignal(signal, DEMO_USER_ID)
+      const signal = feedItemToSignal(item, userId)
+      const result = await evaluateSignal(signal, userId)
 
       // Store item with evaluation results
       await prisma.feedItem.create({
         data: {
           feedId: feed.id,
-          userId: DEMO_USER_ID,
+          userId,
           externalId: item.id,
           title: item.title,
           content: item.content,
@@ -98,6 +99,9 @@ export async function POST(
       totalProcessed: processedCount,
     })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error fetching feed:', error)
     return NextResponse.json(
       { error: 'Failed to fetch feed', details: error instanceof Error ? error.message : 'Unknown error' },

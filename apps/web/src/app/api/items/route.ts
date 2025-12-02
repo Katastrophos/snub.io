@@ -5,8 +5,7 @@
 
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
-
-const DEMO_USER_ID = 'demo-user'
+import { getAuthenticatedUser } from '@/lib/get-user'
 
 /**
  * GET /api/items - List feed items with optional filters
@@ -18,6 +17,8 @@ const DEMO_USER_ID = 'demo-user'
  */
 export async function GET(request: Request) {
   try {
+    const userId = await getAuthenticatedUser()
+
     const { searchParams } = new URL(request.url)
     const feedId = searchParams.get('feedId')
     const decision = searchParams.get('decision')
@@ -25,7 +26,7 @@ export async function GET(request: Request) {
     const offset = parseInt(searchParams.get('offset') || '0')
 
     const where: any = {
-      userId: DEMO_USER_ID,
+      userId,
     }
 
     if (feedId) {
@@ -65,6 +66,9 @@ export async function GET(request: Request) {
       hasMore: offset + items.length < total,
     })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error fetching items:', error)
     return NextResponse.json(
       { error: 'Failed to fetch items' },

@@ -6,8 +6,8 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import prisma from '@/lib/prisma'
-
-const DEMO_USER_ID = 'demo-user'
+import { getAuthenticatedUser } from '@/lib/get-user'
+import { processItemFeedback } from '@/lib/adaptive-learning'
 
 const feedbackSchema = z.object({
   feedback: z.enum(['NOISE', 'SIGNAL']),
@@ -21,23 +21,30 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
+    const userId = await getAuthenticatedUser()
     const body = await request.json()
     const data = feedbackSchema.parse(body)
 
     const item = await prisma.feedItem.update({
       where: {
         id: params.id,
-        userId: DEMO_USER_ID,
+        userId,
       },
       data: {
         userFeedback: data.feedback,
       },
     })
 
-    // TODO: Use feedback to train adaptive filters
+    // Process feedback for adaptive learning (async, don't wait)
+    processItemFeedback(userId, params.id, data.feedback).catch(err => {
+      console.error('Error processing feedback for learning:', err)
+    })
 
     return NextResponse.json({ item })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },

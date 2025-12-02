@@ -8,16 +8,17 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import prisma from '@/lib/prisma'
 import { getDefaultNotificationPrefs } from '@/lib/cron/feed-fetcher'
-
-const DEMO_USER_ID = 'demo-user'
+import { getAuthenticatedUser } from '@/lib/get-user'
 
 /**
  * GET /api/preferences - Get user preferences
  */
 export async function GET() {
   try {
+    const userId = await getAuthenticatedUser()
+
     const user = await prisma.user.findUnique({
-      where: { id: DEMO_USER_ID },
+      where: { id: userId },
       select: {
         preferences: true,
         notificationPrefs: true,
@@ -36,6 +37,9 @@ export async function GET() {
       notificationPrefs: user.notificationPrefs || getDefaultNotificationPrefs(),
     })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error fetching preferences:', error)
     return NextResponse.json(
       { error: 'Failed to fetch preferences' },
@@ -61,11 +65,12 @@ const updatePreferencesSchema = z.object({
  */
 export async function PATCH(request: Request) {
   try {
+    const userId = await getAuthenticatedUser()
     const body = await request.json()
     const data = updatePreferencesSchema.parse(body)
 
     const user = await prisma.user.update({
-      where: { id: DEMO_USER_ID },
+      where: { id: userId },
       data: {
         preferences: data.preferences,
         notificationPrefs: data.notificationPrefs,
@@ -81,6 +86,9 @@ export async function PATCH(request: Request) {
       notificationPrefs: user.notificationPrefs,
     })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },

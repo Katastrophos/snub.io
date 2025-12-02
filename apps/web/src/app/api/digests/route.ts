@@ -8,19 +8,20 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import prisma from '@/lib/prisma'
 import { generateDigest } from '@/lib/digest/generator'
-
-const DEMO_USER_ID = 'demo-user'
+import { getAuthenticatedUser } from '@/lib/get-user'
 
 /**
  * GET /api/digests - List all digests for user
  */
 export async function GET(request: Request) {
   try {
+    const userId = await getAuthenticatedUser()
+
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type')
 
     const where: any = {
-      userId: DEMO_USER_ID,
+      userId,
     }
 
     if (type) {
@@ -35,6 +36,9 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ digests })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error fetching digests:', error)
     return NextResponse.json(
       { error: 'Failed to fetch digests' },
@@ -55,12 +59,13 @@ const createDigestSchema = z.object({
  */
 export async function POST(request: Request) {
   try {
+    const userId = await getAuthenticatedUser()
     const body = await request.json()
     const data = createDigestSchema.parse(body)
 
     const digest = await generateDigest({
       type: data.type,
-      userId: DEMO_USER_ID,
+      userId,
       signalThreshold: data.signalThreshold,
       minItems: data.minItems,
       maxItems: data.maxItems,
@@ -75,6 +80,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ digest }, { status: 201 })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },

@@ -7,13 +7,12 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import prisma from '@/lib/prisma'
+import { getAuthenticatedUser } from '@/lib/get-user'
 
 const updateFeedSchema = z.object({
   enabled: z.boolean().optional(),
   fetchInterval: z.number().min(5).max(1440).optional(),
 })
-
-const DEMO_USER_ID = 'demo-user'
 
 /**
  * PATCH /api/feeds/:id - Update feed settings
@@ -23,19 +22,23 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
+    const userId = await getAuthenticatedUser()
     const body = await request.json()
     const data = updateFeedSchema.parse(body)
 
     const feed = await prisma.feed.update({
       where: {
         id: params.id,
-        userId: DEMO_USER_ID,
+        userId,
       },
       data,
     })
 
     return NextResponse.json({ feed })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
@@ -59,15 +62,20 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const userId = await getAuthenticatedUser()
+
     await prisma.feed.delete({
       where: {
         id: params.id,
-        userId: DEMO_USER_ID,
+        userId,
       },
     })
 
     return NextResponse.json({ success: true })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error deleting feed:', error)
     return NextResponse.json(
       { error: 'Failed to delete feed' },

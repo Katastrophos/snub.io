@@ -15,9 +15,11 @@ export interface ExtensionConfig {
   enabled: boolean
   syncWithWebApp: boolean
   webAppUrl: string
+  extensionToken?: string
   userId?: string
   showStats: boolean
   visualMode: 'hide' | 'dim' | 'blur'
+  lastSyncedAt?: string
 }
 
 export interface FilteredPost {
@@ -32,7 +34,7 @@ export interface FilteredPost {
 
 export const DEFAULT_CONFIG: ExtensionConfig = {
   enabled: true,
-  syncWithWebApp: false,
+  syncWithWebApp: true,
   webAppUrl: 'http://localhost:3000',
   showStats: true,
   visualMode: 'dim',

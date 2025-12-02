@@ -56,6 +56,9 @@ export async function GET() {
       },
     })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error fetching analytics:', error)
     return NextResponse.json(
       { error: 'Failed to fetch analytics' },

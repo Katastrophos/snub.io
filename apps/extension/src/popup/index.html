@@ -12,8 +12,8 @@
     }
 
     body {
-      width: 320px;
-      min-height: 400px;
+      width: 340px;
+      min-height: 420px;
       font-family: 'Courier New', monospace;
       background: #0A0A0A;
       color: #E0E0E0;
@@ -22,7 +22,7 @@
 
     .header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       padding-bottom: 12px;
       border-bottom: 1px solid #2A2A2A;
     }
@@ -42,101 +42,188 @@
       letter-spacing: 1px;
     }
 
-    .stats {
-      margin: 16px 0;
+    .section {
+      margin: 12px 0;
     }
 
-    .stat-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 12px;
-      margin: 4px 0;
+    .section-title {
+      font-size: 10px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .stat-box {
+      padding: 10px;
       background: #1A1A1A;
       border: 1px solid #2A2A2A;
-      font-size: 13px;
-    }
-
-    .stat-label {
-      color: #888;
+      text-align: center;
     }
 
     .stat-value {
+      font-size: 20px;
       font-weight: bold;
+      display: block;
     }
 
-    .stat-value.blocked { color: #FF006E; }
-    .stat-value.reduced { color: #FFA500; }
-    .stat-value.highlighted { color: #06FFA5; }
+    .stat-label {
+      font-size: 9px;
+      color: #666;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
 
-    .toggle-section {
-      margin: 16px 0;
-      padding: 12px;
+    .stat-box.blocked .stat-value { color: #FF006E; }
+    .stat-box.reduced .stat-value { color: #FFA500; }
+    .stat-box.highlighted .stat-value { color: #06FFA5; }
+    .stat-box.total .stat-value { color: #00F5FF; }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
       background: #1A1A1A;
       border: 1px solid #2A2A2A;
+      margin: 6px 0;
     }
 
-    .toggle-label {
+    .toggle-info {
       font-size: 12px;
-      color: #888;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    }
+
+    .toggle-desc {
+      font-size: 9px;
+      color: #666;
+      margin-top: 2px;
     }
 
     .toggle-btn {
-      width: 100%;
-      padding: 10px;
+      padding: 6px 12px;
       font-family: 'Courier New', monospace;
-      font-size: 13px;
+      font-size: 11px;
       font-weight: bold;
       text-transform: uppercase;
-      letter-spacing: 1px;
       cursor: pointer;
-      border: 2px solid;
+      border: 1px solid;
       background: transparent;
-      transition: all 0.3s;
+      transition: all 0.2s;
     }
 
-    .toggle-btn.enabled {
+    .toggle-btn.on {
       color: #06FFA5;
       border-color: #06FFA5;
     }
 
-    .toggle-btn.enabled:hover {
+    .toggle-btn.on:hover {
       background: #06FFA5;
       color: #0A0A0A;
     }
 
-    .toggle-btn.disabled {
+    .toggle-btn.off {
       color: #FF006E;
       border-color: #FF006E;
     }
 
-    .toggle-btn.disabled:hover {
+    .toggle-btn.off:hover {
       background: #FF006E;
       color: #0A0A0A;
     }
 
-    .links {
-      margin-top: 16px;
+    .mode-selector {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      gap: 4px;
+    }
+
+    .mode-btn {
+      padding: 6px 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid #2A2A2A;
+      background: #1A1A1A;
+      color: #666;
+      transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+      border-color: #00F5FF;
+      color: #00F5FF;
+      background: rgba(0, 245, 255, 0.1);
+    }
+
+    .mode-btn:hover:not(.active) {
+      border-color: #444;
+      color: #888;
+    }
+
+    .filter-list {
+      max-height: 80px;
+      overflow-y: auto;
+      font-size: 11px;
+    }
+
+    .filter-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: #1A1A1A;
+      border: 1px solid #2A2A2A;
+      margin: 4px 0;
+    }
+
+    .filter-name {
+      color: #B8B8B8;
+    }
+
+    .filter-type {
+      color: #666;
+      font-size: 9px;
+    }
+
+    .filter-status {
+      font-size: 10px;
+    }
+
+    .filter-status.on { color: #06FFA5; }
+    .filter-status.off { color: #555; }
+
+    .no-filters {
+      padding: 12px;
+      text-align: center;
+      color: #555;
+      font-size: 11px;
+      background: #1A1A1A;
+      border: 1px solid #2A2A2A;
+    }
+
+    .links {
+      display: flex;
+      gap: 6px;
     }
 
     .link-btn {
-      padding: 8px 12px;
+      flex: 1;
+      padding: 10px 8px;
       text-align: center;
       font-family: 'Courier New', monospace;
-      font-size: 11px;
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       color: #00F5FF;
       background: transparent;
       border: 1px solid #2A2A2A;
       text-decoration: none;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.2s;
     }
 
     .link-btn:hover {
@@ -144,12 +231,92 @@
       background: rgba(0, 245, 255, 0.1);
     }
 
-    .footer {
-      margin-top: 20px;
-      padding-top: 12px;
-      border-top: 1px solid #2A2A2A;
+    .link-btn.sync {
+      color: #B388FF;
+    }
+
+    .link-btn.sync:hover {
+      border-color: #B388FF;
+      background: rgba(179, 136, 255, 0.1);
+    }
+
+    .sync-status {
       text-align: center;
+      font-size: 9px;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    .sync-status.success { color: #06FFA5; }
+    .sync-status.error { color: #FF006E; }
+
+    .token-input-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .token-input {
+      flex: 1;
+      padding: 8px 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      background: #1A1A1A;
+      border: 1px solid #2A2A2A;
+      color: #E0E0E0;
+    }
+
+    .token-input:focus {
+      outline: none;
+      border-color: #06FFA5;
+    }
+
+    .token-save-btn {
+      padding: 8px 12px;
+      font-family: 'Courier New', monospace;
       font-size: 10px;
+      text-transform: uppercase;
+      background: #06FFA5;
+      color: #0A0A0A;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .token-save-btn:hover {
+      background: #04c084;
+    }
+
+    .token-status {
+      font-size: 9px;
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    .token-status.saved { color: #06FFA5; }
+    .token-status.has-token { color: #666; }
+
+    .footer {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #2A2A2A;
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      color: #444;
+    }
+
+    .platform-badge {
+      background: #1A1A1A;
+      padding: 2px 6px;
+      border-radius: 2px;
+    }
+
+    .platform-badge.active {
+      color: #06FFA5;
+      border: 1px solid #06FFA5;
+    }
+
+    .platform-badge.inactive {
       color: #555;
     }
   </style>
@@ -160,37 +327,78 @@
     <div class="tagline">Ignore the Noise</div>
   </div>
 
-  <div class="stats">
-    <div class="stat-row">
-      <span class="stat-label">Total Processed:</span>
-      <span class="stat-value" id="stat-total">0</span>
-    </div>
-    <div class="stat-row">
-      <span class="stat-label">🚫 Blocked:</span>
-      <span class="stat-value blocked" id="stat-blocked">0</span>
-    </div>
-    <div class="stat-row">
-      <span class="stat-label">⬇️ Reduced:</span>
-      <span class="stat-value reduced" id="stat-reduced">0</span>
-    </div>
-    <div class="stat-row">
-      <span class="stat-label">⭐ Highlighted:</span>
-      <span class="stat-value highlighted" id="stat-highlighted">0</span>
+  <div class="section">
+    <div class="section-title">Session Stats</div>
+    <div class="stats">
+      <div class="stat-box blocked">
+        <span class="stat-value" id="stat-blocked">0</span>
+        <span class="stat-label">Blocked</span>
+      </div>
+      <div class="stat-box reduced">
+        <span class="stat-value" id="stat-reduced">0</span>
+        <span class="stat-label">Reduced</span>
+      </div>
+      <div class="stat-box highlighted">
+        <span class="stat-value" id="stat-highlighted">0</span>
+        <span class="stat-label">Highlighted</span>
+      </div>
+      <div class="stat-box total">
+        <span class="stat-value" id="stat-total">0</span>
+        <span class="stat-label">Total</span>
+      </div>
     </div>
   </div>
 
-  <div class="toggle-section">
-    <div class="toggle-label">Extension Status</div>
-    <button class="toggle-btn enabled" id="toggle-btn">Enabled</button>
+  <div class="section">
+    <div class="section-title">Controls</div>
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <span>Filtering</span>
+        <div class="toggle-desc">Enable/disable content filtering</div>
+      </div>
+      <button class="toggle-btn on" id="toggle-btn">ON</button>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <span>Visual Mode</span>
+        <div class="toggle-desc">How to display filtered content</div>
+      </div>
+      <div class="mode-selector">
+        <button class="mode-btn" data-mode="hide" title="Completely hide">Hide</button>
+        <button class="mode-btn active" data-mode="dim" title="Fade out">Dim</button>
+        <button class="mode-btn" data-mode="blur" title="Blur content">Blur</button>
+      </div>
+    </div>
   </div>
 
-  <div class="links">
-    <a href="#" class="link-btn" id="open-dashboard">Open Dashboard</a>
-    <a href="#" class="link-btn" id="sync-filters">Sync Filters</a>
+  <div class="section">
+    <div class="section-title">Active Filters</div>
+    <div class="filter-list" id="filter-list">
+      <div class="no-filters">No filters loaded</div>
+    </div>
+  </div>
+
+  <div class="section" id="token-section">
+    <div class="section-title">Sync Token</div>
+    <div class="token-input-row">
+      <input type="password" id="token-input" placeholder="Paste token from Settings..." class="token-input" />
+      <button class="token-save-btn" id="save-token">Save</button>
+    </div>
+    <div class="token-status" id="token-status"></div>
+  </div>
+
+  <div class="section">
+    <div class="links">
+      <button class="link-btn" id="open-dashboard">Dashboard</button>
+      <button class="link-btn" id="open-settings">Settings</button>
+      <button class="link-btn sync" id="sync-filters">Sync</button>
+    </div>
+    <div class="sync-status" id="sync-status"></div>
   </div>
 
   <div class="footer">
-    v0.1.0 // Filtering on <span id="platform">this page</span>
+    <span>v0.4.0</span>
+    <span class="platform-badge inactive" id="platform">Not filtering</span>
   </div>
 
   <script src="popup.js"></script>

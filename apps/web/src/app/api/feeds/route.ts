@@ -8,10 +8,7 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import prisma from '@/lib/prisma'
 import { parseFeed, validateFeedUrl } from '@/lib/feed-parser'
-
-// For now, use a hardcoded demo user
-// TODO: Add proper authentication
-const DEMO_USER_ID = 'demo-user'
+import { getAuthenticatedUser } from '@/lib/get-user'
 
 const createFeedSchema = z.object({
   url: z.string().url(),
@@ -23,11 +20,10 @@ const createFeedSchema = z.object({
  */
 export async function GET() {
   try {
-    // Ensure demo user exists
-    await ensureDemoUser()
+    const userId = await getAuthenticatedUser()
 
     const feeds = await prisma.feed.findMany({
-      where: { userId: DEMO_USER_ID },
+      where: { userId },
       orderBy: { createdAt: 'desc' },
       include: {
         _count: {
@@ -38,6 +34,9 @@ export async function GET() {
 
     return NextResponse.json({ feeds })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error fetching feeds:', error)
     return NextResponse.json(
       { error: 'Failed to fetch feeds' },
@@ -51,8 +50,7 @@ export async function GET() {
  */
 export async function POST(request: Request) {
   try {
-    // Ensure demo user exists
-    await ensureDemoUser()
+    const userId = await getAuthenticatedUser()
 
     const body = await request.json()
     const data = createFeedSchema.parse(body)
@@ -72,7 +70,7 @@ export async function POST(request: Request) {
     // Create feed in database
     const feed = await prisma.feed.create({
       data: {
-        userId: DEMO_USER_ID,
+        userId,
         url: data.url,
         title: parsedFeed.title || 'Untitled Feed',
         description: parsedFeed.description,
@@ -84,6 +82,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ feed }, { status: 201 })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
@@ -96,29 +97,5 @@ export async function POST(request: Request) {
       { error: 'Failed to create feed' },
       { status: 500 }
     )
-  }
-}
-
-/**
- * Ensure demo user exists in database
- */
-async function ensureDemoUser() {
-  const user = await prisma.user.findUnique({
-    where: { id: DEMO_USER_ID },
-  })
-
-  if (!user) {
-    await prisma.user.create({
-      data: {
-        id: DEMO_USER_ID,
-        email: 'demo@snub.io',
-        name: 'Demo User',
-        password: 'demo', // Not used for demo
-      },
-    })
-
-    // Create default filters
-    const { createDefaultFilters } = await import('@/lib/signal-evaluator')
-    await createDefaultFilters(DEMO_USER_ID)
   }
 }
